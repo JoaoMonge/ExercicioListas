@@ -1,3 +1,5 @@
+import com.sun.source.tree.ArrayAccessTree;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -21,51 +23,85 @@ O programa deve permitir:
 
     public static void main(String[] args) {
 
-        ArrayList<ArrayList<String>> contactos = new ArrayList<>();
+        ArrayList<ArrayList<Character>> tabuleiro = new ArrayList<>();
 
-        ArrayList<String> contacto1 = new ArrayList<>();
-        contacto1.add("Joao");
-        contacto1.add("913124253");
-
-        ArrayList<String> contacto2 = new ArrayList<>();
-        contacto2.add("Maria");
-        contacto2.add("923124253");
-
-        ArrayList<String> contacto3 = new ArrayList<>();
-        contacto3.add("Jose");
-        contacto3.add("953124253");
-
-        ArrayList<String> contacto4 = new ArrayList<>();
-        contacto4.add("Pedro");
-        contacto4.add("993124253");
-
-        contactos.add(contacto1);
-        contactos.add(contacto2);
-        contactos.add(contacto3);
-        contactos.add(contacto4);
-
-        Scanner s = new Scanner(System.in);
-
-        while (true) {
-            //Procurar qual é o numero de contacto dado o nome da pessoa
-            System.out.println("Indique o nome a pesquisar ou exit para sair: ");
-            String nome = s.nextLine();
-
-            if(nome.equals("exit")){
-                break;
-            }
-            for (int i = 0; i < contactos.size(); i++) {
-                if (contactos.get(i).get(0).equals(nome)) {
-                    System.out.println("Contacto: " + contactos.get(i).get(1));
-                    break;
-                }
-                if (i == contactos.size() - 1) {
-                    System.out.println("Não existe este contacto na agenda!.");
-                }
-            }
-
+        for(int i = 0; i < 3; i++){
+            ArrayList<Character> linha = new ArrayList<>();
+            linha.add(' ');
+            linha.add(' ');
+            linha.add(' ');
+            tabuleiro.add(linha);
         }
 
+        Character jog1 = 'X';
+        Character jog2 = 'O';
+        Character current_player = jog1;
+        Scanner s = new Scanner(System.in);
+
+        int count_jogadas = 0;
+        while(count_jogadas < 9){
+
+            boolean isInvalid = true;
+
+            while(isInvalid) {
+                System.out.println("Insira a coordenada: x,y");
+                String coord = s.nextLine();
+
+                //Verifica se a string se encontra de acordo com uma certa formatação
+                if(!coord.matches("^[0-2]{1},[0-2]{1}$") ){
+                    System.out.println("Formatação inválida!!");
+                    continue;
+                }
+
+                String coords[] = coord.split(",");
+
+                int x = Integer.valueOf(coords[0]);
+                int y = Integer.valueOf(coords[1]);
+
+                if ( tabuleiro.get(y).get(x) == ' ') {
+                    isInvalid = false;
+                    tabuleiro.get(y).set(x,current_player);
+                }else{
+                    System.out.println("Coordenada inválida!!");
+                }
+            }
+
+
+            for (ArrayList<Character> linha:
+                 tabuleiro) {
+                System.out.println(linha);
+            }
+
+
+            for(int i = 0; i < 3; i++) {
+
+
+
+                boolean condicao_vitoria_linha = tabuleiro.get(i).get(0) != ' ' && tabuleiro.get(i).get(0) == tabuleiro.get(i).get(1) && tabuleiro.get(i).get(1) == tabuleiro.get(i).get(2);
+                boolean condicao_vitoria_coluna = tabuleiro.get(0).get(i) != ' ' && tabuleiro.get(0).get(i) == tabuleiro.get(1).get(i) && tabuleiro.get(1).get(i) == tabuleiro.get(2).get(i);
+
+                boolean condicao_vitoria_diagonal = tabuleiro.get(1).get(1) != ' ' && ((tabuleiro.get(0).get(0) == tabuleiro.get(1).get(1) && tabuleiro.get(1).get(1) == tabuleiro.get(2).get(2)) || (tabuleiro.get(0).get(2) == tabuleiro.get(1).get(1) && tabuleiro.get(1).get(1) == tabuleiro.get(2).get(0)));
+
+
+                if(condicao_vitoria_linha || condicao_vitoria_coluna || condicao_vitoria_diagonal){
+                    System.out.println("Ganhou o "+ current_player +" !! FIM");
+                    return;
+                }
+
+
+
+            }
+
+            if(current_player == jog1){
+                current_player = jog2;
+            }else{
+                current_player = jog1;
+            }
+
+            count_jogadas++;
+        }
+
+        System.out.println("Terminou o jogo.");
 
     }
 }
